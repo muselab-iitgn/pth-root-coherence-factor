@@ -1,4 +1,4 @@
-# pth-root-coherence-factor  
+# pth Root Coherence Factor  
 GPU-accelerated implementation of the **p-th root coherence factor (pCF)** beamforming method for ultrasound imaging, developed at **MUSE Lab, IIT Gandhinagar**.
 
 ---
@@ -7,14 +7,6 @@ GPU-accelerated implementation of the **p-th root coherence factor (pCF)** beamf
 This repository provides **CUDA and MATLAB implementations** of the *p-th root coherence factor* (pCF) beamforming algorithm.  
 The method combines **p-norm Delay-And-Sum (pDAS)** with a **coherence factor (CF)** to improve contrast and resolution in **plane-wave ultrasound imaging**.
 
----
-
-##  Motivation  
-Traditional Delay-And-Sum (DAS) beamforming coherently sums channel signals but can suffer from low contrast in noisy conditions.  
-Coherence Factor (CF) weighting helps emphasize coherent echoes while suppressing incoherent noise.  
-
-
-Combining p-norm DAS with CF weighting (pCF) provides tunable control between **resolution**, **contrast**, and **speckle suppression**.
 
 ---
 
@@ -37,8 +29,6 @@ Combining p-norm DAS with CF weighting (pCF) provides tunable control between **
 - **MATLAB** R2021a or later  
 - **Parallel Computing Toolbox** (recommended)  
 
-For double-precision kernels, GPUs with strong FP64 performance (e.g., RTX A6000, A100, etc.) are preferred.
-
 ---
 
 ##  Installation & Build  
@@ -50,6 +40,7 @@ cd pth-root-coherence-factor
 ```
 
 ### 2. Compile CUDA kernels  
+ If you want to change configuration for GPU (e.g., threads per block), modify the relevant parameters in the CUDA source files before recompiling. Otherwise, precompiled MEX files are provided for reference.
 ```bash
 # For single precision
 mexcuda -lcufft PCI_cuda_single.cu 
@@ -57,7 +48,7 @@ mexcuda -lcufft PCI_cuda_single.cu
 # For double precision  
 mexcuda -lcufft PCI_cuda_double.cu 
 ```
- If you want to change configuration for GPU (e.g., threads per block), modify the relevant parameters in the CUDA source files before recompiling. Otherwise, precompiled MEX files are provided for reference.
+
 
 
 ### 3. Verify MATLAB GPU support  
@@ -69,7 +60,7 @@ gpuDevice
 ---
 
 ## Usage  
-1. Add the path to dataset in Image_generation_code.m.  
+1. Add the path to dataset in `Image_generation_code.m`.  
 2. Set imaging parameters (element positions, speed of sound, sampling frequency, etc.).  
 3. Call the desired beamforming function:  
 ```matlab
@@ -86,53 +77,15 @@ image_GPU_double = PCIfreqRBC_GPU_double(RF_data, element_Pos_Array_X, ...
     speed_Of_Sound, RF_Start_Time, sampling_Freq, ...
     image_Range_X, image_Range_Z, p_value, range_frq, cf_weight);    
 ```
----
-
-## Algorithm Details  
-
-### p-th Root Coherence Factor Formula  
-The pCF beamformed output combines p-norm DAS with coherence factor weighting:
-
-```
-y[n] = (CF[n])^α × (∑|x_i[n + τ_i]|^p)^(1/p)
-
-where:
-- CF[n]: Coherence factor at sample n
-- α: CF weighting parameter (cf_weight)  
-- p: p-norm parameter (p_value)
-- x_i[n]: i-th channel signal
-- τ_i: Time delay for i-th channel
-```
-
-### Coherence Factor Calculation  
-```
-CF[n] = (∑x_i[n + τ_i])² / (N × ∑x_i[n + τ_i]²)
-
-where N is the number of active channels
-```
-
----
-
-## Validation & Testing  
-
-### Run Built-in Tests  
-```matlab
-% Test different beamforming methods
-Image_generation_code;
-
-% Compare CPU vs GPU results
-test_cpu_gpu_consistency;
-```
-
+4. Run the `Image_generation_code.m` script to generate and visualise images.
 ---
 
 
----
+
 
 ## License  
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
----
 
 ---
