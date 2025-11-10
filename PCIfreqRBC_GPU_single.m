@@ -38,17 +38,17 @@ function [beamformed_Image,delay] = PCIfreqRBC_GPU_single(RF_Arr, element_Pos_Ar
 
     tic;
     beamformed_Image = PCI_cuda_single( ...
-    single(RF_Arr), ...                    % [nfft x ncols] real double
-    single(element_Pos_Array_um_X), ...    % [2 x ncols] real double (not used, but required for compatibility)
-    single(speed_Of_Sound_umps), ...       % scalar double (not used, but required for compatibility)
-    single(RF_Start_Time), ...             % scalar double (not used, but required for compatibility)
-    single(sampling_Freq), ...             % scalar double
-    single(image_Range_X_um), ...          % [numX x 1] real double
-    single(image_Range_Z_um), ...          % [numZ x 1] real double
-    single(p), ...                         % scalar double (p-th root)
-    single(all_delays_matrix), ...         % [ncols x (numX*numZ)] real double, precomputed delays (see below)
-    single(range_frq), ...                 % [1x2] double, frequency range [f_low, f_high]
-    single(check) ...                      % scalar double, 1 for pCF, 0 for pDAS
+    single(RF_Arr), ...                    % [nfft x ncols] real single
+    single(element_Pos_Array_um_X), ...    % [2 x ncols] real single (not used, but required for compatibility)
+    single(speed_Of_Sound_umps), ...       % scalar single (not used, but required for compatibility)
+    single(RF_Start_Time), ...             % scalar single (not used, but required for compatibility)
+    single(sampling_Freq), ...             % scalar single
+    single(image_Range_X_um), ...          % [numX x 1] real single
+    single(image_Range_Z_um), ...          % [numZ x 1] real single
+    single(p), ...                         % scalar single (p-th root)
+    single(all_delays_matrix), ...         % [ncols x (numX*numZ)] real single, precomputed delays (see below)
+    single(range_frq), ...                 % [1x2] single, frequency range [f_low, f_high]
+    single(check) ...                      % scalar single, 1 for pCF, 0 for pDAS
 );
 
     

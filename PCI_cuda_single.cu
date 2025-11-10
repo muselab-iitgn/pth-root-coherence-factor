@@ -260,8 +260,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if (ncols > MAX_KERNEL_COLS) {
         mexErrMsgIdAndTxt("PCIimagingSparseCUDA:ncolsError", 
                           "Number of columns (ncols=%zu) exceeds MAX_KERNEL_COLS (%d). "
-                          "Kernels use fixed-size arrays. Recompile with larger MAX_KERNEL_COLS "
-                          "or implement dynamic sizing/shared memory for var_x, var_y in kernels.",
+                          "Kernels use fixed-size arrays. Recompile with larger MAX_KERNEL_COLS.",
                           ncols, MAX_KERNEL_COLS);
     }
 

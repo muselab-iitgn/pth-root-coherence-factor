@@ -52,7 +52,7 @@ check = 1;
 
 p = 3;  % p-th root for beamforming
 
-%% Call the PCI beamforming functions
+% Call the PCI beamforming functions
 
 % For CPU version:
 % II = PCIfreqRBC_CPU(rfFrame, element_Pos_Array_um_X, ...
@@ -109,10 +109,7 @@ Vqp4 = interp2(Xi, Zi, II', Xf, Zf, 'cubic');
 Vqp4(isnan(Vqp4)) = eps;
 Vqp4(Vqp4 < 0) = eps;
 
-% Convert to dB scale
 log_image = 10 * log10(Vqp4 ./ max(Vqp4(:)));
-
-% Clip to -15 dB dynamic range
 log_image(log_image < -15) = -15;
 
 % Plot
