@@ -71,9 +71,6 @@ __global__ void PCI_beamform_batch_kernel(
     const float* delays = d_all_delays + pixel_idx * ncols;
     float pixel_sum = 0.0f;
 
-    // These arrays are on stack/local memory. MAX_KERNEL_COLS (128) is assumed here.
-    // If ncols is 128, this is 1KB (128*2*4 bytes) per thread.
-    // This can lead to register spilling and reduced performance.
     float var_x[MAX_KERNEL_COLS], var_y[MAX_KERNEL_COLS];
 
     for (int f = 0; f < freq_band_len; ++f) {
@@ -83,7 +80,7 @@ __global__ void PCI_beamform_batch_kernel(
         for (int c = 0; c < ncols; ++c) {
             float angle = -delays[c] * d_fftBin[r];
             float cs, sn;
-            __sincosf(angle, &sn, &cs); // Optimized: compute sin and cos together
+            __sincosf(angle, &sn, &cs); // compute sin and cos together
             int rfft_idx = r + c * nfft; 
             cufftComplex val = d_RFFT[rfft_idx];
             var_x[c] = val.x * cs - val.y * sn;
@@ -94,7 +91,7 @@ __global__ void PCI_beamform_batch_kernel(
             // --- pCF branch ---
             float sum_real_das_comp = 0.0f, sum_imag_das_comp = 0.0f;
             for (int c = 0; c < ncols; ++c) {
-                // OPTIMIZED: Direct sum of phase-shifted components for pDAS part of pCF
+                //  Direct sum of phase-shifted components for pDAS part of pCF
                 sum_real_das_comp += var_x[c];
                 sum_imag_das_comp += var_y[c];
             }
@@ -104,7 +101,7 @@ __global__ void PCI_beamform_batch_kernel(
             for (int c = 0; c < ncols; ++c) {
                 float mag = hypotf(var_x[c], var_y[c]);
                 float phase = atan2f(var_y[c], var_x[c]); 
-                float comp = powf(mag, inv_p_param);    // Optimized: use precomputed inv_p_param
+                float comp = powf(mag, inv_p_param);    // use precomputed inv_p_param
                 sum_real_p += comp * __cosf(phase);     
                 sum_imag_p += comp * __sinf(phase);
                 Dr += mag * mag; 
@@ -130,7 +127,7 @@ __global__ void PCI_beamform_batch_kernel(
             for (int c = 0; c < ncols; ++c) {
                 float mag = hypotf(var_x[c], var_y[c]);
                 float phase = atan2f(var_y[c], var_x[c]);
-                float comp = powf(mag, inv_p_param); // Optimized: use precomputed inv_p_param
+                float comp = powf(mag, inv_p_param); // use precomputed inv_p_param
                 sum_real += comp * __cosf(phase);
                 sum_imag += comp * __sinf(phase);
             }
@@ -147,8 +144,6 @@ __global__ void PCI_beamform_batch_kernel(
 }
 
 // Main kernel: one thread per pixel in batch (FP16 version)
-// This kernel is retained as per "retaining all original things"
-// but is not called by the mexFunction in this version to keep inputs unchanged.
 __launch_bounds__(THREADS_PER_BLOCK, 2)
 __global__ void PCI_beamform_batch_kernel_fp16(
     const cufftComplex* __restrict__ d_RFFT, 
