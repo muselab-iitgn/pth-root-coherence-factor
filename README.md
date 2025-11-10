@@ -18,7 +18,7 @@ The method combines **p-norm Delay-And-Sum (pDAS)** with a **coherence factor (C
 | `PCIfreqRBC_CPU.m`, `PCIfreqRBC_GPU_single.m`, `PCIfreqRBC_GPU_double.m` | MATLAB driver scripts for CPU & GPU versions |
 | `pthcoherencefactorfreq.m`, `pthrootfreq.m`, `simpledelayfreq.m` | MATLAB implementations of pCF, pDAS, and DAS beamforming |
 | `Image_generation_code.m` | Example MATLAB image reconstruction script |
-| `example_data.mat`, `example_image.png` | Example datasets and output images |
+| `PData_RBC2_2023Feb14_1_area_2_dataset_99_66338.mat`, `PCI_image_dB_scale.png` | Example datasets and output images |
 | `README.md` | This documentation file |
 
 ---
