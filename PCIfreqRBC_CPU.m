@@ -1,4 +1,4 @@
-function [beamformed_Image] = PCIfreqRBC(RF_Arr, element_Pos_Array_um_X, speed_Of_Sound_umps, RF_Start_Time, sampling_Freq, image_Range_X_um, image_Range_Z_um,p,range_frq,check)
+function [beamformed_Image] = PCIfreqRBC_CPU(RF_Arr, element_Pos_Array_um_X, speed_Of_Sound_umps, RF_Start_Time, sampling_Freq, image_Range_X_um, image_Range_Z_um,p,range_frq,check)
 beamformed_Image = zeros(length(image_Range_X_um), length(image_Range_Z_um));
 fk=linspace(0,sampling_Freq,size(RF_Arr,1));
 [~,FlowerIndex]=min(abs(fk-range_frq(1)));

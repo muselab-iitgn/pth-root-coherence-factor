@@ -1,10 +1,10 @@
-function [beamformed_Image,delay] = PCIfreqRBC(RF_Arr, element_Pos_Array_um_X, speed_Of_Sound_umps, RF_Start_Time, sampling_Freq, image_Range_X_um, image_Range_Z_um,p,range_frq,check)
+function [beamformed_Image,delay] = PCIfreqRBC_GPU_single(RF_Arr, element_Pos_Array_um_X, speed_Of_Sound_umps, RF_Start_Time, sampling_Freq, image_Range_X_um, image_Range_Z_um,p,range_frq,check)
 % Performs PCI beamforming using a CUDA MEX function with precomputed delays.
 
     % Get dimensions
     [nfft, ncols] = size(RF_Arr); % nfft=Axial_depth, ncols=number of elements
     numX = length(image_Range_X_um); % Number of rows in beamformed image
-    numZ = length(image_Range_Z_um); % Number of columns in beamformed image - FIXED THIS LINE
+    numZ = length(image_Range_Z_um); % Number of columns in beamformed image
     total_pixels = numX * numZ;
 
     % --- Precompute all delays on the host ---
@@ -21,23 +21,21 @@ function [beamformed_Image,delay] = PCIfreqRBC(RF_Arr, element_Pos_Array_um_X, s
             currentX_um = image_Range_X_um(xi);
 
             % Calculate distance from pixel (xi, zi) to each element's position
-            % element_Pos_Array_um is expected to be 2 x ncols [X_coords; Z_coords]
             dist_um = sqrt( (currentX_um - element_Pos_Array_um_X(1,:)).^2 + ...
-                            (currentZ_um - element_Pos_Array_um_X(2,:)).^2 ); % Result is 1 x ncols
+                            (currentZ_um - element_Pos_Array_um_X(2,:)).^2 ); 
 
             % Calculate time-of-flight
-            time_s = dist_um / speed_Of_Sound_umps; % Result is 1 x ncols
+            time_s = dist_um / speed_Of_Sound_umps; 
 
             % Calculate delay in samples (negative for focusing/DAS)
-            delay_samples = -time_s * sampling_Freq; % Result is 1 x ncols
+            delay_samples = -time_s * sampling_Freq; 
 
             % Store the delay vector for this pixel as a column
-            all_delays_matrix(:, pixel_index) = delay_samples'; % Transpose to ncols x 1 before assignment
+            all_delays_matrix(:, pixel_index) = delay_samples'; 
         end
     end
     precomputation_time = toc;
 
-    % --- Call CUDA MEX function ---
     tic;
     beamformed_Image = PCI_cuda_single( ...
     single(RF_Arr), ...                    % [nfft x ncols] real double
@@ -52,7 +50,10 @@ function [beamformed_Image,delay] = PCIfreqRBC(RF_Arr, element_Pos_Array_um_X, s
     single(range_frq), ...                 % [1x2] double, frequency range [f_low, f_high]
     single(check) ...                      % scalar double, 1 for pCF, 0 for pDAS
 );
+
+    
     delay = toc;
     delay=delay+precomputation_time;
     beamformed_Image=double(beamformed_Image);
-end % End of function PCIimagingSparseupdated
+
+end 

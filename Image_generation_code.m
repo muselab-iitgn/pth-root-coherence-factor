@@ -15,8 +15,6 @@ else
     error('Setup file not found.');
 end
 
-disp("Hello")
-
 %% Select a dataset (hardcoded)
 datasetFile = fullfile(pn, 'PData_RBC2_2023Feb14_1_area_2_dataset_99_66338.mat');
 
@@ -47,17 +45,21 @@ image_Range_Z_um = linspace(19.91, 77.6644, 125) * 1e3;
 speed_Of_Sound_umps = 1540e6;  % Speed of sound in um/s
 RF_Start_Time = 0;           % Start time for RF data processing
 
-%% Run PCI imaging on the selected frame
-% Assumes the function PCIimagingSparseupdated is available in your MATLAB path.
 range_frq = [2e6, 5e6];  % Lower and upper bounds only
+
+% Set check to 1 for pCF, 0 for pDAS
 check = 1;
-% Call the PCI beamforming functions
-% % For CPU version:
+
+p = 3;  % p-th root for beamforming
+
+%% Call the PCI beamforming functions
+
+% For CPU version:
 % II = PCIfreqRBC_CPU(rfFrame, element_Pos_Array_um_X, ...
 %     speed_Of_Sound_umps, RF_Start_Time, sampling_Freq, ...
 %     image_Range_X_um, image_Range_Z_um, 3, range_frq, check);
 
-% % For GPU double precision version:
+%  For GPU double precision version:
 % II = PCIfreqRBC_GPU_double(rfFrame, element_Pos_Array_um_X, ...
 %     speed_Of_Sound_umps, RF_Start_Time, sampling_Freq, ...
 %     image_Range_X_um, image_Range_Z_um, 3, range_frq, check);
@@ -65,7 +67,10 @@ check = 1;
 % For GPU single precision version:
 II = PCIfreqRBC_GPU_single(rfFrame, element_Pos_Array_um_X, ...
     speed_Of_Sound_umps, RF_Start_Time, sampling_Freq, ...
-    image_Range_X_um, image_Range_Z_um, 3, range_frq, check);
+    image_Range_X_um, image_Range_Z_um, p, range_frq, check);
+
+%%
+
 
 %% Interpolate for smoother display
 tic;
@@ -115,7 +120,7 @@ figure;
 imagesc(xx, zz, log_image);
 colorbar;
 colormap('hot');
-caxis([-15 0]);  % Fix color axis range explicitly
+caxis([-15 0]); 
 axis tight;
 xlim([-15 15]);
 ylim([40 65]);
@@ -124,8 +129,7 @@ ylabel('Range Location (mm)');
 title('PCI Image (Single Frame, -15 dB Dynamic Range)');
 % Save the image
 saveas(gcf, 'PCI_image_dB_scale.png');
-% Alternatively, save as high-resolution figure:
-% print(gcf, 'PCI_image_dB_scale.png', '-dpng', '-r300');
+
 
 
 
