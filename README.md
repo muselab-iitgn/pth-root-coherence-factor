@@ -79,13 +79,3 @@ image_GPU_double = PCIfreqRBC_GPU_double(RF_data, element_Pos_Array_X, ...
 ```
 4. Run the `Image_generation_code.m` script to generate and visualise images.
 ---
-
-
-
-
-## License  
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-
----
